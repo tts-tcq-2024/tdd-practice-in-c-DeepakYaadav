@@ -1,13 +1,16 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
 #define MAX_STRING_LENGTH 1500
+
+// Function to check if a character is a delimiter or newline
 int IsDelimiterCharacter(char c, const char* delimiter) {
     return (c == '\n' || strchr(delimiter, c) != NULL);
 }
+
+// Function to replace delimiters with commas in the input
 void ReplaceDelimitersWithCommas(char* input, const char* delimiter) {
     while (*input) {
         if (IsDelimiterCharacter(*input, delimiter)) {
@@ -16,6 +19,8 @@ void ReplaceDelimitersWithCommas(char* input, const char* delimiter) {
         input++;
     }
 }
+
+// Function to initialize the default delimiter
 void InitializeDefaultDelimiter(char* delimiter) {
     strcpy(delimiter, ",");
 }
@@ -27,7 +32,7 @@ int ExtractDelimiter(const char* input, char* delimiter, const char** numberSequ
         if (delimiterPos) {
             strncpy(delimiter, input + 2, delimiterPos - input - 2);
             delimiter[delimiterPos - input - 2] = '\0';
-            *numberSequence = delimiterPos + 1;
+            *numberSequence = delimiterPos + 1;  // Assign the numbers after the custom delimiter
             return 1; // Custom delimiter found
         }
     }
@@ -35,12 +40,12 @@ int ExtractDelimiter(const char* input, char* delimiter, const char** numberSequ
 }
 
 // Function to determine the delimiter and process the input numbers
-void ParseDelimiterAndNumbers(const char* input, char* delimiter, char** numberSequence) {
+void ParseDelimiterAndNumbers(const char* input, char* delimiter, const char** numberSequence) {
     InitializeDefaultDelimiter(delimiter);
     if (!ExtractDelimiter(input, delimiter, numberSequence)) {
-        *numberSequence = (char*)input;
+        *numberSequence = input; // Use the original input as the number sequence if no custom delimiter
     }
-    ReplaceDelimitersWithCommas(*numberSequence, delimiter);
+    ReplaceDelimitersWithCommas((char*)*numberSequence, delimiter);
 }
 
 // Function to check for negative numbers and print an error if found
@@ -84,7 +89,7 @@ int AddNumbers(const char* input) {
         return 0;
     }
 
-    char* numberSequence;
+    const char* numberSequence;
     char delimiter[MAX_STRING_LENGTH];
 
     ParseDelimiterAndNumbers(input, delimiter, &numberSequence);
