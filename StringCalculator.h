@@ -5,7 +5,7 @@
 
 #define MAX_STRING_LENGTH 1500
 
-// Function to check if a character is a delimiter or newline
+// Helper function to check if a character is a delimiter or newline
 int IsDelimiterCharacter(char c, const char* delimiter) {
     return (c == '\n' || strchr(delimiter, c) != NULL);
 }
@@ -30,9 +30,15 @@ int ExtractDelimiter(const char* input, char* delimiter, const char** numberSequ
     if (strncmp(input, "//", 2) == 0) {
         const char* delimiterPos = strchr(input, '\n');
         if (delimiterPos) {
-            strncpy(delimiter, input + 2, delimiterPos - input - 2);
-            delimiter[delimiterPos - input - 2] = '\0';
-            *numberSequence = delimiterPos + 1;  // Assign the numbers after the custom delimiter
+            // Ensure the extracted delimiter fits within bounds
+            size_t delimiterLength = delimiterPos - input - 2;
+            if (delimiterLength >= MAX_STRING_LENGTH) {
+                fprintf(stderr, "Delimiter too long\n");
+                exit(1);
+            }
+            strncpy(delimiter, input + 2, delimiterLength);
+            delimiter[delimiterLength] = '\0';  // Null-terminate
+            *numberSequence = delimiterPos + 1;
             return 1; // Custom delimiter found
         }
     }
@@ -43,22 +49,22 @@ int ExtractDelimiter(const char* input, char* delimiter, const char** numberSequ
 void ParseDelimiterAndNumbers(const char* input, char* delimiter, const char** numberSequence) {
     InitializeDefaultDelimiter(delimiter);
     if (!ExtractDelimiter(input, delimiter, numberSequence)) {
-        *numberSequence = input; // Use the original input as the number sequence if no custom delimiter
+        *numberSequence = input;
     }
     ReplaceDelimitersWithCommas((char*)*numberSequence, delimiter);
 }
 
 // Function to check for negative numbers and print an error if found
 void ValidateForNegativeNumbers(const char* input) {
-    char* token;
     char inputCopy[MAX_STRING_LENGTH];
-    strcpy(inputCopy, input);
+    strncpy(inputCopy, input, MAX_STRING_LENGTH - 1);
+    inputCopy[MAX_STRING_LENGTH - 1] = '\0';
 
-    token = strtok(inputCopy, ",");
+    char* token = strtok(inputCopy, ",");
     while (token != NULL) {
         int number = atoi(token);
         if (number < 0) {
-            printf("Error: Negative numbers are not allowed (%d)\n", number);
+            fprintf(stderr, "Error: Negative numbers are not allowed (%d)\n", number);
             exit(1);
         }
         token = strtok(NULL, ",");
@@ -68,11 +74,11 @@ void ValidateForNegativeNumbers(const char* input) {
 // Function to calculate the sum, ignoring numbers greater than 1000
 int SumNumbersIgnoringLarge(const char* input) {
     int sum = 0;
-    char* token;
     char inputCopy[MAX_STRING_LENGTH];
-    strcpy(inputCopy, input);
+    strncpy(inputCopy, input, MAX_STRING_LENGTH - 1);
+    inputCopy[MAX_STRING_LENGTH - 1] = '\0';
 
-    token = strtok(inputCopy, ",");
+    char* token = strtok(inputCopy, ",");
     while (token != NULL) {
         int number = atoi(token);
         if (number <= 1000) {
@@ -99,10 +105,8 @@ int AddNumbers(const char* input) {
 }
 
 int main() {
-    // Example usage
     const char* input = "//;\n1;2;1001;3";
     int result = AddNumbers(input);
     printf("Sum: %d\n", result);
-
     return 0;
 }
