@@ -1,44 +1,55 @@
 #include <gtest/gtest.h>
-#include "StringCalculator.h"
+#include "StringCalculator.h" 
 
-TEST(StringCalculatorAddTests, ExpectZeroForEmptyInput) {
-    int expectedresult = 0;
-    const char* input = "Hello, world!";
-    int result = add(input);
-    ASSERT_EQ(result, expectedresult);
+TEST(StringCalculatorTests, ExpectZeroForEmptyInput) {
+    int expectedResult = 0;
+    const char* input = "";
+    int result = AddNumbers(input);
+    ASSERT_EQ(result, expectedResult);
 }
 
-TEST(StringCalculatorAddTests, ExpectZeroForSingleZero) {
-    int expectedresult = 0;
+TEST(StringCalculatorTests, ExpectZeroForSingleZero) {
+    int expectedResult = 0;
     const char* input = "0";
-    int result = add(input);
-    ASSERT_EQ(result, expectedresult);
+    int result = AddNumbers(input);
+    ASSERT_EQ(result, expectedResult);
 }
 
-TEST(StringCalculatorAddTests, ExpectSumForTwoNumbers) {
-    int expectedresult = 3;
-    const char*  input = "1,2";
-    int result = add(input);
-    ASSERT_EQ(result, expectedresult);
+
+TEST(StringCalculatorTests, ExpectSumForTwoNumbers) {
+    int expectedResult = 3;
+    const char* input = "1,2";
+    int result = AddNumbers(input);
+    ASSERT_EQ(result, expectedResult);
 }
 
-TEST(StringCalculatorAddTests, ExpectSumWithNewlineDelimiter) {
-    int expectedresult = 6;
-    const char*  input = "1\n2,3";
-    int result =add(input);
-    ASSERT_EQ(result, expectedresult);
+
+TEST(StringCalculatorTests, ExpectSumWithNewlineDelimiter) {
+    int expectedResult = 6;
+    const char* input = "1\n2,3";
+    int result = AddNumbers(input);
+    ASSERT_EQ(result, expectedResult);
 }
 
-TEST(StringCalculatorAddTests, IgnoreNumbersGreaterThan1000) {
-    int expectedresult = 1;
-    const char*  input = "1,1001";
-    int result =add(input);
-    ASSERT_EQ(result, expectedresult);
+
+TEST(StringCalculatorTests, IgnoreNumbersGreaterThan1000) {
+    int expectedResult = 1;
+    const char* input = "1,1001";
+    int result = AddNumbers(input);
+    ASSERT_EQ(result, expectedResult);
 }
 
-TEST(StringCalculatorAddTests, ExpectSumWithCustomDelimiter) {
-    int expectedresult = 3;
-    const char*  input = "//;\n1;2";
-    int result = add(input);
-    ASSERT_EQ(result, expectedresult);
+
+TEST(StringCalculatorTests, ExpectSumWithCustomDelimiter) {
+    int expectedResult = 3;
+    const char* input = "//;\n1;2";
+    int result = AddNumbers(input);
+    ASSERT_EQ(result, expectedResult);
 }
+
+
+TEST(StringCalculatorTests, ExpectErrorForNegativeNumbers) {
+    const char* input = "1,-2,3";
+    ASSERT_DEATH(AddNumbers(input), "Error: Negative numbers are not allowed");
+}
+
